@@ -18,11 +18,9 @@ Before starting, make sure you have:
 
 ## 🚀 Getting Started
 
-### 1. Clone the repository
-```bash
-git clone <repository-url>
-cd podcast_finder
-```
+### 1. Download and upload the base project to a git repository
+
+Download the project podcast\_finder.zip and upload the base project to Gitlab/Github.
 
 ### 2. Install dependencies
 ```bash
@@ -40,12 +38,6 @@ dart run build_runner build --delete-conflicting-outputs
 
 ### 4. Run the app
 
-**For Android:**
-```bash
-flutter run
-```
-
-**For iOS (Mac only):**
 ```bash
 flutter run
 ```
