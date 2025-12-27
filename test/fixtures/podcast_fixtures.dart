@@ -1,3 +1,5 @@
+import 'package:podcast_finder/features/home/data/models/podcast_model.dart';
+
 class PodcastFixtures {
   static const String mockSearchPath = '/search';
   static const String mockQueryKey = 'q';
@@ -21,4 +23,8 @@ class PodcastFixtures {
       },
     ],
   };
+
+  static final List<PodcastModel> mockPodcastModelList = (mockPodcastResponse['results'] as List)
+      .map((json) => PodcastModel.fromJson(json))
+      .toList();
 }
