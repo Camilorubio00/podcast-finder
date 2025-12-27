@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:podcast_finder/features/home/presentation/screens/home/search_notifier_provider.dart';
+import 'package:podcast_finder/features/home/presentation/screens/home/search_state.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/podcast_model.dart';
 import '../../widgets/podcast_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    // Hardcoded podcasts for the base project
-    // Candidates will replace this with actual API calls
-    final hardcodedPodcasts = [
+  static final hardcodedPodcasts = [
       const PodcastModel(
         id: 'hardcoded-1',
         title: 'The Daily Tech',
@@ -34,53 +33,73 @@ class HomeScreen extends StatelessWidget {
       ),
     ];
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(searchNotifierProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('PodcastFinder'),
-      ),
+      appBar: AppBar(title: const Text('PodcastFinder')),
       body: Column(
         children: [
-          // Search hint (not functional yet - candidates will implement)
           Container(
             padding: const EdgeInsets.all(16),
-            child: const TextField(
-              enabled: false,
-              decoration: InputDecoration(
+            child: TextField(
+              onChanged: (value) => ref.read(searchNotifierProvider.notifier).search(value),
+              decoration: const InputDecoration(
                 hintText: 'Search podcasts...',
                 prefixIcon: Icon(Icons.search),
                 suffixIcon: Tooltip(
                   message: 'This feature needs to be implemented',
-                  child: Icon(
-                    Icons.info_outline,
-                    color: AppColors.primary,
-                  ),
+                  child: Icon(Icons.info_outline, color: AppColors.primary),
                 ),
               ),
             ),
           ),
-          // Hardcoded list
           Expanded(
-            child: ListView.builder(
-              itemCount: hardcodedPodcasts.length,
-              itemBuilder: (context, index) {
-                final podcast = hardcodedPodcasts[index];
-                return PodcastCard(
-                  podcast: podcast,
-                  onTap: () {
-                    // TODO: Navigate to detail screen
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Detail screen not implemented yet'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+            child: _buildBody(ref, state),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBody(WidgetRef ref, SearchState state) {
+    return switch (state) {
+      SearchInitial() => _buildPodcastList(hardcodedPodcasts),
+      SearchLoading() => const Center(child: CircularProgressIndicator()),
+      SearchEmpty() => const Center(
+        child: Text('No podcasts found'),
+      ),
+      SearchError(message: var msg) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(msg),
+            const Text('Try writing another word'),
+          ],
+        ),
+      ),
+      SearchSuccess(podcastModelList: var list) => _buildPodcastList(list)
+    };
+  }
+
+  Widget _buildPodcastList(List<PodcastModel> podcasts) {
+    return ListView.builder(
+      itemCount: podcasts.length,
+      itemBuilder: (context, index) {
+        final podcast = podcasts[index];
+        return PodcastCard(
+          podcast: podcast,
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Detail screen not implemented yet'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
