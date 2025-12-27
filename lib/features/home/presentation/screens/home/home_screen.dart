@@ -10,54 +10,58 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   static final hardcodedPodcasts = [
-      const PodcastModel(
-        id: 'hardcoded-1',
-        title: 'The Daily Tech',
-        publisher: 'Tech News Network',
-        imageUrl: 'https://picsum.photos/seed/daily/200',
-        description: 'Your source for daily technology news and updates.',
-      ),
-      const PodcastModel(
-        id: 'hardcoded-2',
-        title: 'Science Weekly',
-        publisher: 'Science Publishers',
-        imageUrl: 'https://picsum.photos/seed/science/200',
-        description: 'Explore the latest discoveries in science and research.',
-      ),
-      const PodcastModel(
-        id: 'hardcoded-3',
-        title: 'Business Insights',
-        publisher: 'Business Media Co',
-        imageUrl: 'https://picsum.photos/seed/business/200',
-        description: 'Deep dives into successful business strategies.',
-      ),
-    ];
+    const PodcastModel(
+      id: 'hardcoded-1',
+      title: 'The Daily Tech',
+      publisher: 'Tech News Network',
+      imageUrl: 'https://picsum.photos/seed/daily/200',
+      description: 'Your source for daily technology news and updates.',
+    ),
+    const PodcastModel(
+      id: 'hardcoded-2',
+      title: 'Science Weekly',
+      publisher: 'Science Publishers',
+      imageUrl: 'https://picsum.photos/seed/science/200',
+      description: 'Explore the latest discoveries in science and research.',
+    ),
+    const PodcastModel(
+      id: 'hardcoded-3',
+      title: 'Business Insights',
+      publisher: 'Business Media Co',
+      imageUrl: 'https://picsum.photos/seed/business/200',
+      description: 'Deep dives into successful business strategies.',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(searchNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('PodcastFinder')),
+      appBar: AppBar(
+        title: const Text('PodcastFinder'),
+        backgroundColor: AppColors.background,
+      ),
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            height: 48,
+            margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
             child: TextField(
-              onChanged: (value) => ref.read(searchNotifierProvider.notifier).search(value),
-              decoration: const InputDecoration(
+              onChanged: (value) =>
+                  ref.read(searchNotifierProvider.notifier).search(value),
+              decoration: InputDecoration(
                 hintText: 'Search podcasts...',
-                prefixIcon: Icon(Icons.search),
-                suffixIcon: Tooltip(
-                  message: 'This feature needs to be implemented',
-                  child: Icon(Icons.info_outline, color: AppColors.primary),
+                prefixIcon: const Icon(Icons.search),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.border),
                 ),
               ),
             ),
           ),
-          Expanded(
-            child: _buildBody(ref, state),
-          ),
+          Expanded(child: _buildBody(ref, state)),
         ],
       ),
     );
@@ -67,19 +71,14 @@ class HomeScreen extends ConsumerWidget {
     return switch (state) {
       SearchInitial() => _buildPodcastList(hardcodedPodcasts),
       SearchLoading() => const Center(child: CircularProgressIndicator()),
-      SearchEmpty() => const Center(
-        child: Text('No podcasts found'),
-      ),
+      SearchEmpty() => const Center(child: Text('No podcasts found')),
       SearchError(message: var msg) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(msg),
-            const Text('Try writing another word'),
-          ],
+          children: [Text(msg), const Text('Try writing another word')],
         ),
       ),
-      SearchSuccess(podcastModelList: var list) => _buildPodcastList(list)
+      SearchSuccess(podcastModelList: var list) => _buildPodcastList(list),
     };
   }
 
