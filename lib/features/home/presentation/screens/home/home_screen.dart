@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../data/models/podcast_model.dart';
-import '../widgets/podcast_card.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../data/models/podcast_model.dart';
+import '../../widgets/podcast_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
