@@ -6,6 +6,7 @@ import 'package:podcast_finder/core/network/dio_client.dart';
 import 'package:podcast_finder/features/home/data/datasources/podcast_remote_data_source_impl.dart';
 import 'package:podcast_finder/features/home/data/datasources/podcast_remote_data_source_provider.dart';
 import 'package:podcast_finder/features/home/data/models/podcast_model.dart';
+import 'package:podcast_finder/features/home/data/models/podcast_detail_model.dart';
 import '../fixtures/podcast_fixtures.dart';
 
 class MockDio extends Mock implements Dio {}
@@ -79,6 +80,57 @@ void main() {
 
       expect(
         () => dataSource.searchPodcastBy(query: PodcastFixtures.mockQueryValue),
+        throwsException,
+      );
+    });
+  });
+
+  group('getPodcastById', () {
+    test(
+      'Should return a PodcastDetailModel when the response is 200',
+      () async {
+        when(
+          () => mockDio.get(any()),
+        ).thenAnswer(
+          (_) async => Response(
+            data: PodcastFixtures.mockPodcastDetailResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(
+              path: PodcastFixtures.mockDetailPath,
+            ),
+          ),
+        );
+
+        final result = await dataSource.getPodcastBy(
+          id: PodcastFixtures.mockPodcastId,
+        );
+
+        expect(result, isA<PodcastDetailModel>());
+        expect(result.id, PodcastFixtures.mockPodcastId);
+        expect(result.title, 'Tech Talk Daily');
+        expect(result.publisher, 'Tech Media Inc');
+        expect(result.episodes.length, 3);
+        expect(result.episodes[0].id, 'episode-1');
+        expect(result.episodes[0].title, 'The Future of AI Development');
+
+        verify(
+          () => mockDio.get(PodcastFixtures.mockDetailPath),
+        ).called(1);
+      },
+    );
+
+    test('Should throw an exception when the response fails', () async {
+      when(
+        () => mockDio.get(any()),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: PodcastFixtures.mockDetailPath),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      expect(
+        () => dataSource.getPodcastBy(id: PodcastFixtures.mockPodcastId),
         throwsException,
       );
     });

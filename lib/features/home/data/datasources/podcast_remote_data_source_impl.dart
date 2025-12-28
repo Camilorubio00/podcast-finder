@@ -4,6 +4,7 @@ import 'package:podcast_finder/core/network/api_endpoints.dart';
 import 'package:podcast_finder/core/network/network_exceptions.dart';
 import 'package:podcast_finder/features/home/data/datasources/podcast_remote_data_source.dart';
 import 'package:podcast_finder/features/home/data/models/podcast_model.dart';
+import 'package:podcast_finder/features/home/data/models/podcast_detail_model.dart';
 
 class PodcastRemoteDataSourceImpl implements PodcastRemoteDataSource {
   final Dio _dio;
@@ -27,6 +28,21 @@ class PodcastRemoteDataSourceImpl implements PodcastRemoteDataSource {
       throw NetworkException.fromDioError(exception);
     } catch (exception) {
       throw Exception('Fails in the search: ${exception.toString()}');
+    }
+  }
+
+  @override
+  Future<PodcastDetailModel> getPodcastBy({required String id}) async {
+    try {
+      final response = await _dio.get(
+        ApiEndpoints.podcastDetail(id),
+      );
+
+      return PodcastDetailModel.fromJson(response.data);
+    } on DioException catch (exception) {
+      throw NetworkException.fromDioError(exception);
+    } catch (exception) {
+      throw Exception('Fails to get podcast: ${exception.toString()}');
     }
   }
 }
