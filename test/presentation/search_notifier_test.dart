@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:podcast_finder/core/network/network_exceptions.dart';
 import 'package:podcast_finder/features/home/data/repositories/podcast_repository_provider.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_notifier.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_notifier_provider.dart';
@@ -69,12 +70,14 @@ void main() {
       verify(() => mockRepository.searchPodcastBy(query: 'pod')).called(1);
     });
 
-    test('Should emit [Loading, Error] when repository fails', () async {
+    test('Should emit [Loading, Error] when NetworkException occurs', () async {
       final states = <SearchState>[];
       notifier.addListener((state) => states.add(state));
 
+      const networkException = TimeoutException();
+
       when(() => mockRepository.searchPodcastBy(query: any(named: 'query')))
-          .thenThrow(Exception('Network Error'));
+          .thenThrow(networkException);
 
       notifier.search('error');
       await waitDebouncer();
@@ -85,7 +88,8 @@ void main() {
         isA<SearchError>(),
       ]);
       
-      expect((notifier.state as SearchError).message, contains('Network Error'));
+      final lastState = states.last as SearchError;
+      expect(lastState.message, networkException.message);
     });
 
     test('Should emit [Loading, Empty] when no results found', () async {

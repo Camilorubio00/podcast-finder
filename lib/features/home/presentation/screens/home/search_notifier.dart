@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:podcast_finder/core/network/network_exceptions.dart';
 import 'package:podcast_finder/core/utils/debouncer.dart';
 import 'package:podcast_finder/features/home/domain/repositories/podcast_repository.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_state.dart';
@@ -26,6 +27,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
         } else {
           state = SearchSuccess(results.take(10).toList());
         }
+      } on NetworkException catch (exception) {
+        state = SearchError(exception.toString());
       } catch (exception) {
         state = SearchError(exception.toString());
       }
