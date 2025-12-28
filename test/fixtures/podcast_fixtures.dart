@@ -25,6 +25,16 @@ class PodcastFixtures {
   };
 
   static final List<PodcastModel> mockPodcastModelList = (mockPodcastResponse['results'] as List)
-      .map((json) => PodcastModel.fromJson(json))
-      .toList();
+          .map((json) => PodcastModel.fromJson(json))
+          .toList();
+
+  static PodcastModel get mockFirstPodcast => mockPodcastModelList.first;
+
+  static final PodcastModel mockPodcastNoDesc = const PodcastModel(
+    id: '1',
+    title: 'No Desc',
+    publisher: 'Pub',
+    imageUrl: '',
+    description: null,
+  );
 }
