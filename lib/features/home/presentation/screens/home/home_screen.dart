@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_notifier_provider.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_state.dart';
+import 'package:podcast_finder/features/home/presentation/widgets/error_message_widget.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/podcast_model.dart';
 import '../../widgets/podcast_card.dart';
@@ -71,12 +72,10 @@ class HomeScreen extends ConsumerWidget {
     return switch (state) {
       SearchInitial() => _buildPodcastList(hardcodedPodcasts),
       SearchLoading() => const Center(child: CircularProgressIndicator()),
-      SearchEmpty() => const Center(child: Text('No podcasts found')),
-      SearchError(message: var msg) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text(msg), const Text('Try writing another word')],
-        ),
+      SearchEmpty() => _buildSearchEmpty(),
+      SearchError(message: var msg) => ErrorMessageWidget(
+        message: msg,
+        onRetry: () {},
       ),
       SearchSuccess(podcastModelList: var list) => _buildPodcastList(list),
     };
@@ -99,6 +98,21 @@ class HomeScreen extends ConsumerWidget {
           },
         );
       },
+    );
+  }
+
+  Widget _buildSearchEmpty() {
+    return const Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.podcasts, size: 40, color: AppColors.textSecondary),
+        SizedBox(width: 8),
+        Text(
+          'No podcasts found',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, color: AppColors.textSecondary),
+        ),
+      ],
     );
   }
 }
