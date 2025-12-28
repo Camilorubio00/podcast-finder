@@ -69,6 +69,59 @@ void main() {
     });
   });
 
+  group('getPodcastById', () {
+    test(
+      'Should return the podcast detail when the data source responds successfully',
+      () async {
+        when(
+          () => mockDataSource.getPodcastBy(
+            id: PodcastFixtures.mockPodcastId,
+          ),
+        ).thenAnswer((_) async => PodcastFixtures.mockPodcastDetail);
+
+        final result = await repository.getPodcastBy(
+          id: PodcastFixtures.mockPodcastId,
+        );
+
+        expect(result, equals(PodcastFixtures.mockPodcastDetail));
+        expect(result.id, PodcastFixtures.mockPodcastId);
+        expect(result.episodes.length, 3);
+        verify(
+          () => mockDataSource.getPodcastBy(
+            id: PodcastFixtures.mockPodcastId,
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'Should rethrow TimeoutException when data source throws it',
+      () async {
+        when(
+          () => mockDataSource.getPodcastBy(id: any(named: 'id')),
+        ).thenThrow(const TimeoutException());
+
+        final result = repository.getPodcastBy;
+
+        expect(() => result(id: PodcastFixtures.mockPodcastId),
+            throwsA(isA<TimeoutException>()));
+      },
+    );
+
+    test('Should return the exception when the data source fails', () async {
+      when(
+        () => mockDataSource.getPodcastBy(
+          id: PodcastFixtures.mockPodcastId,
+        ),
+      ).thenThrow(Exception('Error Server'));
+
+      expect(
+        () => repository.getPodcastBy(id: PodcastFixtures.mockPodcastId),
+        throwsA(isA<Exception>()),
+      );
+    });
+  });
+
   group('PodcastRepositoryProvider', () {
     test(
       'Should provide a PodcastRepositoryImpl instance with the correct dependency',
