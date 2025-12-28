@@ -7,8 +7,15 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/podcast_model.dart';
 import '../../widgets/podcast_card.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late TextEditingController _searchController;
 
   static final hardcodedPodcasts = [
     const PodcastModel(
@@ -35,7 +42,19 @@ class HomeScreen extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(searchNotifierProvider);
 
     return Scaffold(
@@ -49,6 +68,7 @@ class HomeScreen extends ConsumerWidget {
             height: 48,
             margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
             child: TextField(
+              controller: _searchController,
               onChanged: (value) =>
                   ref.read(searchNotifierProvider.notifier).search(value),
               decoration: InputDecoration(
@@ -62,21 +82,18 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-          Expanded(child: _buildBody(ref, state)),
+          Expanded(child: _buildBody(state)),
         ],
       ),
     );
   }
 
-  Widget _buildBody(WidgetRef ref, SearchState state) {
+  Widget _buildBody(SearchState state) {
     return switch (state) {
       SearchInitial() => _buildPodcastList(hardcodedPodcasts),
       SearchLoading() => const Center(child: CircularProgressIndicator()),
       SearchEmpty() => _buildSearchEmpty(),
-      SearchError(message: var msg) => ErrorMessageWidget(
-        message: msg,
-        onRetry: () {},
-      ),
+      SearchError(message: var message) => _buildError(message),
       SearchSuccess(podcastModelList: var list) => _buildPodcastList(list),
     };
   }
@@ -113,6 +130,16 @@ class HomeScreen extends ConsumerWidget {
           style: TextStyle(fontSize: 20, color: AppColors.textSecondary),
         ),
       ],
+    );
+  }
+
+  Widget _buildError(String message) {
+    return ErrorMessageWidget(
+      message: message,
+      onRetry: () {
+        final query = _searchController.text;
+        ref.read(searchNotifierProvider.notifier).search(query);
+      },
     );
   }
 }
