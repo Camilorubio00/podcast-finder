@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:podcast_finder/features/home/presentation/widgets/detail_screen_shimmer.dart';
 import 'package:podcast_finder/core/theme/app_colors.dart';
 import '../../widgets/error_message_widget.dart';
 import 'detail_notifier_provider.dart';
@@ -19,7 +20,6 @@ class PodcastDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -62,7 +62,7 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
   }
 
   Widget _buildLoadingState() {
-    return const Center(child: CircularProgressIndicator());
+    return const DetailScreenShimmer();
   }
 
   Widget _buildErrorState(String message) {
