@@ -35,34 +35,44 @@ class MockInterceptor extends Interceptor {
     handler.next(options);
   }
 
-  Map<String, dynamic> _getMockSearchResponse(String query) {
-    return {
-      'count': 3,
-      'results': [
-        {
-          'id': 'podcast-1',
-          'title': 'Tech Talk Daily',
-          'publisher': 'Tech Media Inc',
-          'thumbnail': 'https://picsum.photos/seed/podcast1/200',
-          'description_original': 'Your daily dose of technology news and insights. We cover everything from startups to AI.',
-        },
-        {
-          'id': 'podcast-2',
-          'title': 'The Science Show',
-          'publisher': 'Science Network',
-          'thumbnail': 'https://picsum.photos/seed/podcast2/200',
-          'description_original': 'Exploring the wonders of science, from quantum physics to biology.',
-        },
-        {
-          'id': 'podcast-3',
-          'title': 'Business Builders',
-          'publisher': 'Entrepreneur Media',
-          'thumbnail': 'https://picsum.photos/seed/podcast3/200',
-          'description_original': 'Stories and strategies from successful entrepreneurs around the world.',
-        },
-      ],
-    };
-  }
+Map<String, dynamic> _getMockSearchResponse(String query) {
+  final allResults = [
+    {
+      'id': 'podcast-1',
+      'title': 'Tech Talk Daily',
+      'publisher': 'Tech Media Inc',
+      'thumbnail': 'https://picsum.photos/seed/podcast1/200',
+      'description_original': 'Your daily dose of technology news and insights. We cover everything from startups to AI.',
+    },
+    {
+      'id': 'podcast-2',
+      'title': 'The Science Show',
+      'publisher': 'Science Network',
+      'thumbnail': 'https://picsum.photos/seed/podcast2/200',
+      'description_original': 'Exploring the wonders of science, from quantum physics to biology.',
+    },
+    {
+      'id': 'podcast-3',
+      'title': 'Business Builders',
+      'publisher': 'Entrepreneur Media',
+      'thumbnail': 'https://picsum.photos/seed/podcast3/200',
+      'description_original': 'Stories and strategies from successful entrepreneurs around the world.',
+    },
+  ];
+
+  final filteredResults = allResults.where((podcast) {
+    final title = podcast['title'].toString().toLowerCase();
+    final publisher = podcast['publisher'].toString().toLowerCase();
+    final searchTerm = query.toLowerCase();
+
+    return title.contains(searchTerm) || publisher.contains(searchTerm);
+  }).toList();
+
+  return {
+    'count': filteredResults.length,
+    'results': filteredResults,
+  };
+}
 
   Map<String, dynamic> _getMockPodcastDetailResponse(String id) {
     return {
