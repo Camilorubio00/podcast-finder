@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_notifier_provider.dart';
 import 'package:podcast_finder/features/home/presentation/screens/home/search_state.dart';
 import 'package:podcast_finder/features/home/presentation/widgets/error_message_widget.dart';
@@ -105,14 +106,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final podcast = podcasts[index];
         return PodcastCard(
           podcast: podcast,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Detail screen not implemented yet'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          },
+          onTap: () => context.push('/podcast/${podcast.id}'),
         );
       },
     );
